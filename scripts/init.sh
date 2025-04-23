@@ -9,5 +9,10 @@ command -v docker >/dev/null || echo "❌ Docker not installed"
 command -v terraform >/dev/null || echo "❌ Terraform not installed"
 
 echo "✅ Tools check complete"
-cd terraform/environments/dev
-terraform init
+
+if [ -d "terraform/environments/dev" ]; then
+  cd terraform/environments/dev
+  terraform init
+else
+  echo "❌ dev environment folder not found"
+fi

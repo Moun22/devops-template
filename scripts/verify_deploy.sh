@@ -3,7 +3,7 @@
 # - Check service health endpoint
 # - Retry on failure and print response
 
-URL="http://localhost:8000/health"
+URL="http://localhost:3000/health"
 for i in {1..5}; do
   STATUS=$(curl -s -o /dev/null -w "%{http_code}" $URL)
   if [ "$STATUS" == "200" ]; then

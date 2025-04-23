@@ -32,14 +32,16 @@ jobs:
       name: production
       url: ${{ steps.deploy.outputs.production_url }}
     steps:
-      - name: Manual Approval
-        uses: hmarr/auto-approve-action@v2
+      - name: Wait for manual approval
+        uses: trstringer/manual-approval@v1
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
+          secret: ${{ secrets.GITHUB_TOKEN }}
+          approvers: Moun22
+          environment: production
 
       - name: Deploy to Production
         run: |
           echo "Deploying to production..."
-          # Add your deployment commands here
+            # Add your deployment commands here
         env:
           PRODUCTION_SECRET: ${{ secrets.PRODUCTION_SECRET }}

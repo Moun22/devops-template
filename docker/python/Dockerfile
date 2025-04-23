@@ -19,7 +19,7 @@ RUN python -m venv venv && \
     pip install --no-cache-dir -r requirements.txt
 
 # Copy the rest of the application code
-COPY . .
+COPY .. .
 
 # Change ownership of the working directory
 RUN chown -R appuser:appgroup /usr/src/app
