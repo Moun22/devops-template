@@ -1,0 +1,45 @@
+# Create a GitHub Actions workflow for continuous integration that:
+# - runs on every push and pull request
+# - sets up Node.js and Python environments
+# - runs linter (flake8 / eslint)
+# - runs tests (pytest / npm test)
+# - builds Docker image
+
+name: Continuous Integration
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install Node.js dependencies
+        run: npm install
+
+      - name: Run ESLint
+        run: npm run lint
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run flake8
+        run: flake8 .
+
+      - name: Run tests
+        run: |
+          pytest tests/
+          npm test
+
+      - name: Build Docker image
+        run: docker build -t your-image-name .
