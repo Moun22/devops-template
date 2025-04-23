@@ -1,0 +1,60 @@
+
+cat <<EOF > monitoring/logs-config.yml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: logs-config
+  namespace: monitoring
+data:
+  loki-config.yaml: |
+    server:
+      http_listen_port: 3100
+    ingester:
+      lifecycler:
+        ring:
+          kvstore:
+            store: inmemory
+    schema_config:
+      configs:
+        - from: 2023-01-01
+          store: boltdb-shipper
+          object_store: filesystem
+          schema: v11
+          index:
+            prefix: loki_index_
+            period: 24h
+    storage_config:
+      boltdb_shipper:
+        active_index_directory: /tmp/loki/index
+        shared_store: filesystem
+      filesystem:
+        directory: /tmp/loki/chunks
+    limits_config:
+      max_streams_per_user: 10000
+EOF
+
+# Create a configuration for log aggregation using Fluent Bit or similar tools:
+# - Include input sources (app logs, container logs)
+# - Define log labels (app, env)
+# - Set output to Loki or Elasticsearch
+
+cat <<EOF > monitoring/fluent-bit-config.yml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fluent-bit-config
+  namespace: logging
+data:
+  fluent-bit.conf: |
+    [SERVICE]
+        Flush         5
+        Log_Level     info
+
+    [INPUT]
+        Name         tail
+        Path         /var/log/containers/*.log
+        Parser       docker
+
+    [OUTPUT]
+        Name         loki
+        Match        *

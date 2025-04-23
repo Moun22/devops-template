@@ -1,0 +1,75 @@
+// Create a basic Grafana dashboard JSON:
+// - Includes a CPU usage panel
+// - Memory usage panel
+// - Panel for custom app metrics (requests/sec)
+
+// - Panel for error rates
+// - Uses Prometheus as the data source
+// - Uses JSON format
+{
+  "annotations": {
+    "list": []
+  },
+  "editable": true,
+  "panels": [
+    {
+      "title": "CPU Usage",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "rate(node_cpu_seconds_total[5m])",
+          "interval": "",
+          "legendFormat": "{{cpu}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Memory Usage",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "(node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes) / node_memory_MemTotal_bytes * 100",
+          "interval": "",
+          "legendFormat": "{{instance}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Custom App Metrics (requests/sec)",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "(rate(http_requests_total[5m]))",
+          "interval": "",
+          "legendFormat": "{{method}} {{path}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "title": "Error Rates",
+      "type": "graph",
+      "targets": [
+        {
+          "expr": "(rate(http_requests_total{status=~\"5..\"}[5m]))",
+          "interval": "",
+          "legendFormat": "{{method}} {{path}}",
+          "refId": "A"
+        }
+      ]
+    }
+  ],
+  // Define the time range for the dashboard
+  time: {
+    from: null,
+    to: null,
+    now: true,
+    refresh: false
+  },
+  // Define the data source for the dashboard
+  templating: {
+    list: []
+  }
+}

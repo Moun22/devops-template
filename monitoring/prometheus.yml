@@ -1,0 +1,45 @@
+# Create a Prometheus configuration file that:
+# - Scrapes metrics from Kubernetes pods, node exporter, and app services
+# - Uses job labels and scrape intervals
+# - Configures alerting rules file
+
+cat <<EOF > monitoring/prometheus.yml
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+scrape_configs:
+  - job_name: 'kubernetes-pods'
+    kubernetes_sd_configs:
+      - role: pod
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port]
+        action: replace
+        target_label: __address__
+        regex: (.+)
+        replacement: $1
+
+  - job_name: 'node-exporter'
+    static_configs:
+      - targets: ['node-exporter-service-name:9100']
+
+  - job_name: 'app-services'
+    kubernetes_sd_configs:
+      - role: service
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_service_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+            - alertmanager-service-name:9093
+
+rule_files:
+  - "alerting_rules.yml"
+EOF
