@@ -1,0 +1,41 @@
+# Create a docker-compose file to run Python and Node.js services together for local dev.
+# Include:
+# - named volumes
+# - separate containers for web-node and web-python
+# - shared network
+# - environment variables
+version: '3.8'
+
+services:
+  web-node:
+    build:
+      context: ./node
+      dockerfile: Dockerfile
+    volumes:
+      - node_modules:/usr/src/app/node_modules
+      - ./node:/usr/src/app
+    environment:
+      NODE_ENV: development
+      API_URL: http://web-python:5000/api
+    networks:
+      - app-network
+
+  web-python:
+    build:
+      context: ./python
+      dockerfile: Dockerfile
+    volumes:
+      - python_env:/usr/src/app/.env
+      - ./python:/usr/src/app
+    environment:
+      FLASK_ENV: development
+      DATABASE_URL: sqlite:///app.db
+    networks:
+      - app-network
+
+volumes:
+  node_modules:
+  python_env:
+
+networks:
+  app-network:
