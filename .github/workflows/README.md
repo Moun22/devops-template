@@ -1,0 +1,4 @@
+- **Testing**: Run unit tests, integration tests, and other automated test suites.
+- **Linting**: Perform static code analysis to ensure code quality and adherence to standards.
+- **Docker Builds**: Build and push Docker images to container registries.
+- **Deployment**: Automate the deployment of applications to environments such as Kubernetes or cloud platforms.
